@@ -1,0 +1,43 @@
+version: '3'
+services:
+  # Data base container:
+  mongodb:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.mongoDB
+    restart: always
+    ports:
+      - 27017:27017
+
+  # Server container
+  app:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    depends_on:
+      - mongodb
+    # Copies working directory (./auth-service) to specified folder
+    volumes:
+      - $PWD:/auth-service
+    ports:
+      - 3000:3000
+    environment:
+      # TODO: get from env vars
+      - DB_URL=mongodb://user:pass@mongodb:27017
+      - NODE_ENV=production
+
+  # TODO: make it run in Postman with all the layers working
+  # Tests container
+  # tests:
+  #   build:
+  #     context: .
+  #     dockerfile: ./Dockerfile.test
+  #   depends_on:
+  #     - app
+  #     - mongodb
+  #   # Copies working directory (./auth-service) to specified folder
+  #   volumes:
+  #     - $PWD:/auth-service-test
+  #   environment:
+  #     - DB_URL=mongodb://user:pass@mongodb:27017
+  #     - NODE_ENV=integration-testing 
