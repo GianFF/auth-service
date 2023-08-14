@@ -1,25 +1,26 @@
 {
-  "name": "login-microservice",
+  "name": "auth-service",
   "version": "1.0.0",
   "description": "Micro Service for handling loggins",
   "main": "index.js",
   "scripts": {
     "debug": "nodemon --inspect=0.0.0.0:9229 ./src/server.js",
     "serve": "nodemon ./src/server.js",
+    "start": "node ./src/server.js",
     "lint": "eslint './src/**/*.js'",
     "test": "jest --runInBand --detectOpenHandles",
     "test-coverage": "jest --collect-coverage --passWithNoTests"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/GianFF/login-microservice.git"
+    "url": "git+https://github.com/GianFF/auth-service.git"
   },
   "author": "Gian Franco Fioriello",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/GianFF/login-microservice/issues"
+    "url": "https://github.com/GianFF/auth-service/issues"
   },
-  "homepage": "https://github.com/GianFF/login-microservice#readme",
+  "homepage": "https://github.com/GianFF/auth-service#readme",
   "dependencies": {
     "aws-sdk": "^2.1421.0",
     "body-parser": "^1.20.2",

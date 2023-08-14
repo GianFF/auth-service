@@ -18,7 +18,7 @@ services:
       - mongodb
     # Copies working directory (./auth-service) to specified folder
     volumes:
-      - $PWD:/auth-service
+      - ./:/auth-service
     ports:
       - 3000:3000
     environment:
@@ -26,18 +26,9 @@ services:
       - DB_URL=mongodb://user:pass@mongodb:27017
       - NODE_ENV=production
 
-  # TODO: make it run in Postman with all the layers working
-  # Tests container
-  # tests:
-  #   build:
-  #     context: .
-  #     dockerfile: ./Dockerfile.test
-  #   depends_on:
-  #     - app
-  #     - mongodb
-  #   # Copies working directory (./auth-service) to specified folder
-  #   volumes:
-  #     - $PWD:/auth-service-test
-  #   environment:
-  #     - DB_URL=mongodb://user:pass@mongodb:27017
-  #     - NODE_ENV=integration-testing 
+    # TODO: not sure if this is actually been called:
+    healthcheck:
+      test: curl --fail http://localhost:3000/healthcheck || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5

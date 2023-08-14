@@ -1,4 +1,4 @@
-# Login Microservice
+# Auth Service
 
 Provides user identification after a user authenticates through an API using this microservice.
 This is a microservice using NodeJS with Express and MongoDB for handling users authentication.

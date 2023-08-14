@@ -15,6 +15,10 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(logger(application.loggerFactory));
 
+app.get('/healthcheck', (_, res) => {
+  console.log('HEALTH');
+  res.send('Server Healthy');
+});
 app.use('/v1', initV1(application));
 
 app.use(errorHandler);
