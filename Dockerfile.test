@@ -2,12 +2,10 @@ FROM node:18-alpine
 
 WORKDIR /auth-service-test
 
-COPY package*.json ./
+COPY . .
 
 COPY .env-example .env
 
 RUN npm ci
-
-COPY . .
 
 CMD [ "npm", "run", "test" ]

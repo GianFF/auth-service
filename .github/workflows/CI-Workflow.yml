@@ -28,8 +28,62 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run the tests
+      - name: Run tests
         run: npm run test-coverage
 
       - name: Run linter
         run: npm run lint
+
+  api-integration-tests:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.16.0]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      
+      # TODO: looks like the app container is crashing, 
+      # it might been killed since node-modules can't be found
+      # - Volumes are there, do they have the node-modules installed?
+      # - not sure whats going on
+
+      - name: Start backend
+        # run: docker compose up -d
+        run: docker compose -f docker-compose.yml up --build
+
+      - name: Check running containers
+        run: |
+          docker ps -a
+          docker volume ls
+
+      # - name: Start backend
+      #   uses: isbang/compose-action@v1.5.1
+      #   with:
+      #     compose-file: "./docker-compose.yml"
+      #     down-flags: "--volumes"
+
+      - name: Install Postman CLI
+        run: |
+          curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
+
+      - name: Login to Postman CLI
+        run: postman login --with-api-key ${{ secrets.POSTMAN_API_KEY }}
+
+      - name: Check running containers
+        run: |
+          docker ps -a
+          docker volume ls
+
+      - name: Run API tests
+        run: |
+          postman collection run "2930866-7e2ffb9a-c3ad-48f4-8420-cb5396aa2111" --integration-id "146216-${{ github.run_id }}"

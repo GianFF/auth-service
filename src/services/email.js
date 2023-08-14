@@ -17,8 +17,8 @@ const emailService = {
     try {
       await this.ses.sendEmail(params).promise();
     } catch (error) {
-      logger.log(error.message);
-      throw error;
+      logger.log(`Email Service ERROR: ${error.message}`);
+      // TODO: throw error;
     }
   },
 };

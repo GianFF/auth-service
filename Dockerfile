@@ -2,12 +2,10 @@ FROM node:18-alpine
 
 WORKDIR /auth-service
 
-COPY package*.json ./
+COPY . .
 
 COPY .env-example .env
 
 RUN npm ci --production
 
-COPY . .
-
-CMD [ "npm", "run", "serve" ]
+CMD [ "npm", "run", "start" ]
