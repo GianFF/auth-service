@@ -11,6 +11,6 @@ You can startup the DB using a Docker image as follows:
 * `npm run serve`
 
 ## App setup with Docker
-* `docker compose -f docker-compose.yml up --build`
+* `docker compose up -d --wait --wait-timeout 60 --build`
 
 

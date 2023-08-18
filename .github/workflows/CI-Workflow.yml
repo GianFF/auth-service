@@ -52,25 +52,13 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
       
-      # TODO: looks like the app container is crashing, 
-      # it might been killed since node-modules can't be found
-      # - Volumes are there, do they have the node-modules installed?
-      # - not sure whats going on
-
       - name: Start backend
-        # run: docker compose up -d
-        run: docker compose -f docker-compose.yml up --build
+        run: docker compose up -d --wait --wait-timeout 60 --build
 
       - name: Check running containers
         run: |
           docker ps -a
           docker volume ls
-
-      # - name: Start backend
-      #   uses: isbang/compose-action@v1.5.1
-      #   with:
-      #     compose-file: "./docker-compose.yml"
-      #     down-flags: "--volumes"
 
       - name: Install Postman CLI
         run: |
@@ -78,11 +66,6 @@ jobs:
 
       - name: Login to Postman CLI
         run: postman login --with-api-key ${{ secrets.POSTMAN_API_KEY }}
-
-      - name: Check running containers
-        run: |
-          docker ps -a
-          docker volume ls
 
       - name: Run API tests
         run: |

@@ -15,10 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(logger(application.loggerFactory));
 
-app.get('/healthcheck', (_, res) => {
-  console.log('HEALTH');
-  res.send('Server Healthy');
-});
+app.get('/healthcheck', (_, res) => res.status(200).send({ message: 'Server healthy' }));
 app.use('/v1', initV1(application));
 
 app.use(errorHandler);
