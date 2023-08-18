@@ -1,45 +1,47 @@
 # Auth Service
 
-Provides user identification after a user authenticates through an API using this microservice.
-This is a microservice using NodeJS with Express and MongoDB for handling users authentication.
+Provides user authentication for other services.
+This is a microservice using NodeJS with Express and MongoDB.
+
+- [Auth Service](#auth-service)
+  - [Project setup](#project-setup)
+  - [Local Setup](#local-setup)
+  - [App setup with Docker](#app-setup-with-docker)
+  - [Testing](#testing)
+  - [Architectural Decisions](#architectural-decisions)
 
 ---
 
-## Json Web Token (JWT)
+## Project setup
+- `nvm use`
+- `npm ci`
+- `npm run tests`
 
-JWT defines a way for securely transmitting information between parties as a JSON object. This information can be verified and trusted because it is digitally signed. JWTs can be signed using a secret or a public/private key pair.
-* https://jwt.io/introduction
+## Local Setup
 
-### Access Token
+You can startup the DB using a Docker image as follows:
+* `docker build -f Dockerfile.mongoDB . -t authmongodb`
+* `docker run --publish 27017:27017 authmongodb`  
 
-Token used to authenticate a User through an API.   
-For security concerns this one should be stored in memory so it can be garbage-collected on app close or after a desired amount of time.
-Do note that with signed tokens, all the information contained within the token is exposed to users or other parties, even though they are unable to change it. This means you should not put secret information within the token.
-Also, if it's compromised the attacker has short time to use it.
+And then just start the server:
+* `npm run serve`
 
+## App setup with Docker
+`docker compose up -d --wait --wait-timeout 60 --build`
 
-* Short time living
-* Stored in client memory (accessible through JS)
-* Issued in auth
-* Used until expires
-* API verifies it using a middleware
-* New one issued at Refresh Request
+## Testing
+The intention is to have a high code coverage, but not more important is to have the core features well tested (unit and integration).
 
-### Refresh Token
+Go to: [Testing REAMDE](https://github.com/GianFF/auth-service/blob/main/test/README.MD)
 
-Token used to retrieve a new Access Token from an API.   
-For security concerns this one should be stored in an http cookie, this way is not accessible from javascript and less promt to be compromised. 
-
-* Long time living
-* Stored in app DB & client httpOnly cookie (not accessible through JS)
-* Issued in auth
-* Expires on logout (but also after some time)
-* Client uses it to request a new Access Token
-* Verified with endpoint and DB
-
----
-
-Inspiration from Tutorial: https://www.youtube.com/watch?v=favjC6EKFgw
-* minute 5:45 --> creating access token secrets with crypto random strings
-* minute 13:00 --> JWT auth tokens
-* minute 29:00 --> cookie parser
+## Architectural Decisions
+* Github Actions for CI/CD running workflos on main branch.
+  - each commit on main builds a new Docker image and push it to the Registry.
+  - each commit on every branch runs tests, linter, and also integration_tests using POSTMAN and docker-compose in the Github Action VM.
+  - main branch is be protected, restricting devs to merge a broken PR. Saving the CD workflow to build broken images.
+* Node JS with Express and vanilla Javascript to build the Client API.
+* Unit testing with Jest.
+* Eslint to keep code consistency.
+* Docker Images repositories:
+  - [API](https://hub.docker.com/repository/docker/edymberg/auth-service/general)
+  - TODO: DB Backup
