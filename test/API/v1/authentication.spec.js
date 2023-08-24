@@ -1,4 +1,5 @@
 const request = require('supertest');
+const bcrypt = require('bcrypt');
 const { connectDB, dropDB, dropCollections } = require('../../connection');
 const config = require('../../../src/config');
 config.NODE_ENV = 'test';
@@ -35,7 +36,7 @@ describe('SignUp', () => {
     const user = await application.accountRepository.findByEmail({ email });
     expect(user).toBeTruthy();
     expect(user.email).toBe(email);
-    expect(user.password).toBe(password);
+    expect(await bcrypt.compare(password, user.password)).toBe(true);
     expect(user.verificationCode).toBeTruthy();
     expect(user.status).toBe('Unverified');
   });

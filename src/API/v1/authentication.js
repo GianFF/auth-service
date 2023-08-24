@@ -1,19 +1,13 @@
+const bcrypt = require('bcrypt');
 const { asyncHandler } = require('../../middlewares/asyncHandler');
 
 const registerAuthRoutes = (router, application) => {
-  // TODO:
-  // * use https
-  // * receive the password in the Request Body
-  // * hash the password before sending it
-  // * issue a Token after user authentication
-  // * protect against CSRF attacks
-
   router.post('/signup', asyncHandler(async (req, res) => {
-    req.logger.log('POST /signup');
-
     const { email, password } = req.body;
+    // TODO: decrypt crypted password and bcrypt before saving.
+    const cryptedPassword = bcrypt.hashSync(password, 8);
     await application.authService.signup({
-      email, password, ...application, logger: req.logger,
+      email, password: cryptedPassword, ...application, logger: req.logger,
     });
     return res
       .status(200)
