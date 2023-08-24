@@ -1,7 +1,7 @@
 const { restoreMocks } = require('../restoreMocks');
 const { signup } = require('../../src/services/authentication');
 const { accountRepository } = require('../../src/repositories/account');
-const { fakeEmailService } = require('../../src/services/fakeEmail');
+const { fakeEmailService } = require('../../src/services/email');
 
 describe('SignUp', () => {
   let sendVerificationEmailSpy;

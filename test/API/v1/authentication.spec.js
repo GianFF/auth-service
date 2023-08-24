@@ -8,15 +8,15 @@ const { application } = require('../../../src/application');
 // Mock console.log to do nothing:
 require('../../loggerMock');
 
-beforeAll(async () => {
-  await connectDB();
-});
-
-afterAll(async () => {
-  await dropDB();
-});
-
 describe('SignUp', () => {
+  beforeAll(async () => {
+    await connectDB();
+  });
+
+  afterAll(async () => {
+    await dropDB();
+  });
+
   beforeEach(async () => {
     await dropCollections();
   });

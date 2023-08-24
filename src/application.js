@@ -3,13 +3,15 @@ const { connectDB } = require('./database/connection');
 const { accountRepository } = require('./repositories/account');
 // TODO: remove comment once AWS credentials granted
 // const { emailService } = require('./services/email');
-const { fakeEmailService } = require('./services/fakeEmail');
+const { fakeEmailService } = require('./services/email');
+const authService = require('./services/authentication');
 const loggerFactory = require('./logger');
 const { isTesting, isDevelopment } = require('./environment');
 
 const testApp = () => ({
   loggerFactory,
   accountRepository,
+  authService,
   emailService: fakeEmailService,
 });
 
@@ -19,6 +21,7 @@ const devApp = () => {
   return {
     loggerFactory,
     accountRepository,
+    authService,
     emailService: fakeEmailService,
   };
 };
@@ -29,6 +32,7 @@ const prodApp = () => {
   return {
     loggerFactory,
     accountRepository,
+    authService,
     emailService: fakeEmailService, // TODO: remove once AWS credentials granted
   };
 };

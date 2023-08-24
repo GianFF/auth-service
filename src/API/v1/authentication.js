@@ -1,5 +1,4 @@
 const { asyncHandler } = require('../../middlewares/asyncHandler');
-const { signup } = require('../../services/authentication');
 
 const registerAuthRoutes = (router, application) => {
   // TODO:
@@ -13,7 +12,7 @@ const registerAuthRoutes = (router, application) => {
     req.logger.log('POST /signup');
 
     const { email, password } = req.body;
-    await signup({
+    await application.authService.signup({
       email, password, ...application, logger: req.logger,
     });
     return res
