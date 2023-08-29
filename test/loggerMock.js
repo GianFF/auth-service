@@ -1,9 +1,11 @@
-let writtenMessages = [];
+const mockConsole = () => {
+  let writtenMessages = [];
+  jest.spyOn(console, 'log').mockImplementation((messageToLog) => {
+    writtenMessages.push(messageToLog);
+  });
+};
 
-jest.spyOn(console, 'log').mockImplementation((messageToLog) => {
-  writtenMessages.push(messageToLog);
-});
 
 module.exports = {
-  writtenMessages,
+  mockConsole,
 };

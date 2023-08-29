@@ -1,10 +1,18 @@
 const mongoose = require('mongoose');
+const { VERIFIED, UNVERIFIED } = require('../constants/accountStatus');
 
 const accountSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  status: { type: String, default: 'Unverified' },
   verificationCode: { type: String },
+  status: {
+    type: String,
+    default: UNVERIFIED,
+    enum: [
+      UNVERIFIED,
+      VERIFIED,
+    ],
+  },
 });
 
 const Account = mongoose.model('Account', accountSchema);
