@@ -58,7 +58,6 @@ const signin = async ({
     password,
     account.password,
   );
-  logger.log(`Password validation: ${passwordIsValid}`);
   if (!passwordIsValid) {
     logger.log(`Invalid sign in attempt from ${email}. Invalid password`);
     throw new HTTPError('Invalid credentials', 401);
@@ -67,4 +66,14 @@ const signin = async ({
   return account;
 };
 
-module.exports = { signup, signin };
+// TODO:
+const verify = async ({
+  email,
+  accountRepository,
+  logger,
+}) => {
+  logger.log(`Verify attempt from ${email}`);
+  await accountRepository.verifyAccount({ email });
+};
+
+module.exports = { signup, signin, verify };

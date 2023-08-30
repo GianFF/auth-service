@@ -69,4 +69,4 @@ jobs:
 
       - name: Run API tests
         run: |
-          postman collection run "2930866-7e2ffb9a-c3ad-48f4-8420-cb5396aa2111" --integration-id "146216-${{ github.run_id }}"
+          postman collection run "2930866-85bc0cfa-0406-4c85-b1ae-c50ff8581c62" --integration-id "146216-${{ github.run_id }}"

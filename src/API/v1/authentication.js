@@ -41,6 +41,18 @@ const registerAuthRoutes = (router, application) => {
         acountEmail: account.email,
       });
   }));
+
+  // TODO:
+  router.post('/verify', asyncHandler(async (req, res) => {
+    const { email } = req.body;
+    await application.authService.verify({
+      email, ...application, logger: req.logger,
+    });
+
+    return res
+      .status(200)
+      .send({ message: 'Successfully verified' });
+  }));
 };
 
 module.exports = { registerAuthRoutes };
