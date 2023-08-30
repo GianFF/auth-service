@@ -42,13 +42,11 @@ const registerAuthRoutes = (router, application) => {
       });
   }));
 
-  // TODO:
   router.post('/verify', asyncHandler(async (req, res) => {
-    const { email } = req.body;
+    const { email, verificationCode } = req.body;
     await application.authService.verify({
-      email, ...application, logger: req.logger,
+      email, verificationCode, ...application, logger: req.logger,
     });
-
     return res
       .status(200)
       .send({ message: 'Successfully verified' });

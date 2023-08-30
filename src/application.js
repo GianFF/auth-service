@@ -7,8 +7,10 @@ const { fakeEmailService } = require('./services/email');
 const authService = require('./services/authentication');
 const loggerFactory = require('./logger');
 const { isTesting, isDevelopment } = require('./environment');
+const { fakeUUIDGenerator, prodUUIDGenerator } = require('./uuid');
 
 const testApp = () => ({
+  uuidGenerator: fakeUUIDGenerator,
   loggerFactory,
   accountRepository,
   authService,
@@ -19,6 +21,7 @@ const devApp = () => {
   connectDB(config.DB_URL);
 
   return {
+    uuidGenerator: fakeUUIDGenerator,
     loggerFactory,
     accountRepository,
     authService,
@@ -30,6 +33,7 @@ const prodApp = () => {
   connectDB(config.DB_URL);
 
   return {
+    uuidGenerator: prodUUIDGenerator,
     loggerFactory,
     accountRepository,
     authService,

@@ -6,6 +6,7 @@ const { connectDB, dropDB, dropCollections } = require('../../connection');
 const { app } = require('../../../src/app');
 const { application } = require('../../../src/application');
 const { mockConsole } = require('../../loggerMock');
+const { fakeUUIDGenerator } = require('../../../src/uuid');
 
 describe('Auth', () => {
   beforeAll(async () => {
@@ -43,6 +44,7 @@ describe('Auth', () => {
         password,
         accountRepository: application.accountRepository,
         emailService: application.emailService,
+        uuidGenerator: fakeUUIDGenerator,
         logger: console,
       });
       account = await application.accountRepository.verifyAccount({ email });

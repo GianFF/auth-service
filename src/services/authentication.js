@@ -1,4 +1,3 @@
-const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcrypt');
 const HTTPError = require('../errors/httpError');
 const { VERIFIED } = require('../constants/accountStatus');
@@ -8,6 +7,7 @@ const signup = async ({
   password,
   accountRepository,
   emailService,
+  uuidGenerator,
   logger,
 }) => {
   logger.log(`New signup attempt from ${email}`);
@@ -19,7 +19,7 @@ const signup = async ({
     throw new HTTPError('Email already taken', 409);
   }
 
-  const verificationCode = uuidv4();
+  const verificationCode = uuidGenerator.generate();
 
   try {
     // TODO: decrypt crypted password and bcrypt before saving.
@@ -66,14 +66,23 @@ const signin = async ({
   return account;
 };
 
-// TODO:
 const verify = async ({
   email,
+  verificationCode,
   accountRepository,
   logger,
 }) => {
   logger.log(`Verify attempt from ${email}`);
+
+  const account = await accountRepository.findByEmail({ email });
+  if (!account) {
+    throw new HTTPError('Invalid credentials', 404);
+  }
+  if (account.verificationCode !== verificationCode) {
+    throw new HTTPError('Invalid verification code', 409);
+  }
   await accountRepository.verifyAccount({ email });
+  logger.log(`Account verified: ${email}`);
 };
 
 module.exports = { signup, signin, verify };

@@ -4,6 +4,7 @@ const { signup, signin } = require('../../src/services/authentication');
 const { accountRepository } = require('../../src/repositories/account');
 const { fakeEmailService } = require('../../src/services/email');
 const { VERIFIED, UNVERIFIED } = require('../../src/constants/accountStatus');
+const { fakeUUIDGenerator } = require('../../src/uuid');
 const { mockConsole } = require('../loggerMock');
 
 describe('Auth Service', () => {
@@ -32,6 +33,7 @@ describe('Auth Service', () => {
         password: 'testpassword',
         accountRepository,
         emailService: fakeEmailService,
+        uuidGenerator: fakeUUIDGenerator,
         logger: console
       });
     };
@@ -103,7 +105,8 @@ describe('Auth Service', () => {
         email,
         password,
         accountRepository,
-        logger: console
+        uuidGenerator: fakeUUIDGenerator,
+        logger: console,
       });
     };
 

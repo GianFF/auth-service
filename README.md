@@ -27,7 +27,10 @@ And then just start the server:
 * `npm run serve`
 
 ## App setup with Docker
-`docker compose up -d --wait --wait-timeout 60 --build`
+- TEST: `docker compose --env-file .env-test up -d --wait --wait-timeout 60 --build`
+- DEV: `docker compose --env-file .env-dev up -d --wait --wait-timeout 60 --build` (also used on CI)
+- PROD: `docker compose up -d --wait --wait-timeout 60 --build` (.env file loaded by default)
+
 
 ## Testing
 The intention is to have a high code coverage, but not more important is to have the core features well tested (unit and integration).
