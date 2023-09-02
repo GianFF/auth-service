@@ -1,8 +1,11 @@
+process.env.JWT_SECRET = '123';
+process.env.AUTH_TOKEN = '123';
+
 const request = require('supertest');
+const jwt = require('jsonwebtoken');
 const { connectDB, dropDB, dropCollections } = require('../../connection');
 const { app } = require('../../../src/app');
 const { application } = require('../../../src/application');
-const { UNVERIFIED, VERIFIED } = require('../../../src/constants/accountStatus');
 const { restoreMocks } = require('../../restoreMocks');
 const { mockConsole } = require('../../loggerMock');
 const { fakeUUIDGenerator } = require('../../../src/uuid');
@@ -26,14 +29,16 @@ describe('Auth', () => {
     restoreMocks();
   });
 
-  describe('Verify Account', () => {
-    let account;
+  describe('Verify Token', () => {
     let response;
     let email = 'test@mail.com';
     let password = 'testpassword';
     let verificationCode = fakeUUIDGenerator.generate();
+    let authHeader;
 
-    beforeEach(async () => {  
+    beforeEach(async () => {
+      authHeader = `Bearer ${jwt.sign({}, process.env.AUTH_TOKEN, { algorithm: 'HS256' })}`;
+
       await application.authService.signup({
         email,
         password,
@@ -42,49 +47,45 @@ describe('Auth', () => {
         uuidGenerator: fakeUUIDGenerator,
         logger: console,
       });
+      await application.authService.verify({
+        email,
+        verificationCode,
+        accountRepository: application.accountRepository,
+        logger: console,
+      });
     });
 
     const subject = async () => {
       response = await request(app)
-        .post('/v1/verify')
-        .send({ email, verificationCode });
+        .get('/v1/verifyToken')
+        .set('Authorization', authHeader);
     };
 
     describe('200', () => {
-      it('should return a success message and account must be verified', async () => {
+      it('should return a success message', async () => {
         await subject();
 
-        account = await application.accountRepository.findByEmail({ email });
         expect(response.status).toBe(200);
-        expect(response.body.message).toBe('Successfully verified');
-        expect(account.status).toBe(VERIFIED);
+        expect(response.body.message).toBe('Token verified');
       });  
     });
 
-    describe('404', () => {
-      it('when account does not exists', async () => {
-        const correctEmail = email;
-        email = 'NOTtest@mail.com';
+    describe('401', () => {
+      it('when auth header is not set', async () => {
+        response = await request(app).get('/v1/verifyToken');
 
-        await subject();
-
-        account = await application.accountRepository.findByEmail({ email: correctEmail });
-        expect(response.status).toBe(404);
-        expect(response.body.message).toBe('Invalid credentials');
-        expect(account.status).toBe(UNVERIFIED);
+        expect(response.status).toBe(401);
+        expect(response.body.message).toBe('No auth header provided');
       });  
     });
 
-    describe('409', () => {
-      it('when verification code does not matches', async () => {
-        verificationCode = '321';
-
+    describe('403', () => {
+      it('when auth header is invalid', async () => {
+        authHeader = `Bearer ${jwt.sign({}, '321', { algorithm: 'HS256' })}`;
         await subject();
 
-        account = await application.accountRepository.findByEmail({ email });
-        expect(response.status).toBe(409);
-        expect(response.body.message).toBe('Invalid verification code');
-        expect(account.status).toBe(UNVERIFIED);
+        expect(response.status).toBe(403);
+        expect(response.body.message).toBe('Unauthorized');
       });  
     });
   });

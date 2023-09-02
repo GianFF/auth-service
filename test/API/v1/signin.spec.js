@@ -1,5 +1,5 @@
-process.env.JWT_SECRET = '1e6ad7d2-4687-11ee-be56-0242ac120002';
-process.env.COOKIE_SECRET = '96e84d74-4688-11ee-be56-0242ac120002';
+process.env.JWT_SECRET = '123';
+process.env.AUTH_TOKEN = '123';
 
 const request = require('supertest');
 const { connectDB, dropDB, dropCollections } = require('../../connection');
@@ -61,12 +61,11 @@ describe('Auth', () => {
         expect(response.body.acountEmail).toBe(account.email);
       });
 
-      it('and signs the cookie', async () => {
+      it('and the auth token', async () => {
         await subject();
 
         expect(response.status).toBe(200);
-        // TODO: double check what we want to assert here
-        expect(response.header['set-cookie']).not.toBeUndefined();
+        expect(response.body.authToken).not.toBeUndefined();
       });
     });
 
@@ -78,7 +77,7 @@ describe('Auth', () => {
 
         expect(response.status).toBe(401);
         expect(response.body.message).toBe('Invalid credentials');
-        expect(response.header['set-cookie']).toBeUndefined();
+        expect(response.body.authToken).toBeUndefined();
       });
   
       it('when password is not valid', async () => {
@@ -88,7 +87,7 @@ describe('Auth', () => {
 
         expect(response.status).toBe(401);
         expect(response.body.message).toBe('Invalid credentials');
-        expect(response.header['set-cookie']).toBeUndefined();
+        expect(response.body.authToken).toBeUndefined();
       });
 
       it('when account is not verified', async () => {
@@ -99,7 +98,7 @@ describe('Auth', () => {
 
         expect(response.status).toBe(401);
         expect(response.body.message).toBe('Verify your account');
-        expect(response.header['set-cookie']).toBeUndefined();
+        expect(response.body.authToken).toBeUndefined();
       });
 
       it('when account does not exists', async () => {
@@ -109,7 +108,7 @@ describe('Auth', () => {
 
         expect(response.status).toBe(401);
         expect(response.body.message).toBe('Invalid credentials');
-        expect(response.header['set-cookie']).toBeUndefined();
+        expect(response.body.authToken).toBeUndefined();
       });
     })
   });

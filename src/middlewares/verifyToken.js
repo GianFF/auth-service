@@ -1,22 +1,20 @@
 const jwt = require('jsonwebtoken');
-const { JWT_SECRET } = require('../config');
+const { AUTH_TOKEN } = require('../config');
 const HTTPError = require('../errors/httpError');
 
 const verifyToken = (req, _, next) => {
-  const { token } = req.session;
-
-  if (!token) {
-    throw new HTTPError('No token provided', 403);
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    throw new HTTPError('No auth header provided', 401);
   }
-
-  jwt.verify(token, JWT_SECRET, (err, decoded) => {
-    if (err) {
-      throw new HTTPError('Unauthorized', 401);
+  const authToken = authHeader.split(' ')[1];
+  jwt.verify(authToken, AUTH_TOKEN, (error, decoded) => {
+    if (error) {
+      throw new HTTPError('Unauthorized', 403);
     }
-
     req.accountID = decoded.accountID;
-    next();
   });
+  next();
 };
 
 module.exports = { verifyToken };

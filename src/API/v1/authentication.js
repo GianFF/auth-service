@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
-const { JWT_SECRET } = require('../../config');
+const { AUTH_TOKEN } = require('../../config');
 const { asyncHandler } = require('../../middlewares/asyncHandler');
+const { verifyToken } = require('../../middlewares/verifyToken');
 
 const registerAuthRoutes = (router, application) => {
   router.post('/signup', asyncHandler(async (req, res) => {
@@ -17,21 +18,23 @@ const registerAuthRoutes = (router, application) => {
 
   router.post('/signin', asyncHandler(async (req, res) => {
     const { email, password } = req.body;
+    // TODO: investigate other ways to send Password, i.e.: authorization header
     const account = await application.authService.signin({
       email, password, ...application, logger: req.logger,
     });
 
-    const token = jwt.sign(
+    const authToken = jwt.sign(
       { accountID: account.id }, // Save util info in cookie
-      JWT_SECRET,
+      AUTH_TOKEN,
       {
         algorithm: 'HS256',
         allowInsecureKeySizes: true,
-        expiresIn: 86400, // 24 hours
+        expiresIn: 3600, // 1 hour
       },
     );
-    req.session.token = token;
 
+    // TODO: investigate other ways to send AuthTokens, i.e.: cookies:
+    // https://dev.to/franciscomendes10866/using-cookies-with-jwt-in-node-js-8fn
     return res
       .status(200)
       .send({
@@ -39,6 +42,7 @@ const registerAuthRoutes = (router, application) => {
         acountID: account.id,
         acountRoles: [],
         acountEmail: account.email,
+        authToken,
       });
   }));
 
@@ -51,6 +55,10 @@ const registerAuthRoutes = (router, application) => {
       .status(200)
       .send({ message: 'Successfully verified' });
   }));
+
+  router.use(verifyToken);
+
+  router.get('/verifyToken', (_, res) => res.status(200).send({ message: 'Token verified' }));
 };
 
 module.exports = { registerAuthRoutes };
